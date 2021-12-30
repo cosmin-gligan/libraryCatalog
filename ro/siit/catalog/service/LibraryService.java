@@ -11,10 +11,11 @@ import static ro.siit.catalog.common.Constant.Discounts.MAX_DISCOUNT_PERCENT;
 import static ro.siit.catalog.common.Constant.Discounts.MIN_DISCOUNT_PERCENT;
 
 public class LibraryService {
+    private static Map<String, Book> libraryCatalog = new TreeMap<>();
     public static void startApp() {
         //cream map-ul si-l populam
         System.out.println("Catalogul de carti in starea initiala este:");
-        Map<String, Book> libraryCatalog = new TreeMap<>(populateLibraryCatalog());
+        libraryCatalog = new TreeMap<>(populateLibraryCatalog());
 
         //afisam map-ul in starea initiala
         printLibraryCatalog(libraryCatalog);
@@ -59,13 +60,11 @@ public class LibraryService {
         ArtAlbum pastFutures = new ArtAlbum("Pasts, Futures, and Aftermaths", "9781734681710", "Koenig Books", "Adam", "Pendleton", 61, 100, PaperQualityEnum.FINE);
         ArtAlbum interiorGarden = new ArtAlbum("Interior Garden", "9783775750905", "Hatje Cantz", "Hannah", "Höch", 32, 125, PaperQualityEnum.POOR);
 
-        Map<String, Book> libraryCatalog = new TreeMap<>() {{
-            put(hyperion.getTitle(), hyperion);
-            put(dune.getTitle(), dune);
-            put(shtMyDadSays.getTitle(), shtMyDadSays);
-            put(pastFutures.getTitle(), pastFutures);
-            put(interiorGarden.getTitle(), interiorGarden);
-        }};
+        libraryCatalog.put(hyperion.getTitle(), hyperion);
+        libraryCatalog.put(dune.getTitle(), dune);
+        libraryCatalog.put(shtMyDadSays.getTitle(), shtMyDadSays);
+        libraryCatalog.put(pastFutures.getTitle(), pastFutures);
+        libraryCatalog.put(interiorGarden.getTitle(), interiorGarden);
 
         return libraryCatalog;
     }
