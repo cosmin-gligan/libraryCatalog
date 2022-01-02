@@ -12,19 +12,20 @@ import static ro.siit.catalog.common.Constant.Discounts.MIN_DISCOUNT_PERCENT;
 
 public class LibraryService {
     private static Map<String, Book> libraryCatalog = new TreeMap<>();
+
     public static void startApp() {
         //cream map-ul si-l populam
         System.out.println("Catalogul de carti in starea initiala este:");
         libraryCatalog = new TreeMap<>(populateLibraryCatalog());
 
         //afisam map-ul in starea initiala
-        printLibraryCatalog(libraryCatalog);
+        printLibraryCatalog();
 
         //cautam o carte in catalog dupa nume, ii aplicam un %discount => pret vanzare diferit
         String searchedBookName = "Hyperion";
         try {
             //cautam cartea dupa nume
-            Book searchedBook = getBookByNameFromCatalog(libraryCatalog, searchedBookName);
+            Book searchedBook = getBookByNameFromCatalog(searchedBookName);
             //cartea cautata primeste un procent de discount aleatoriu intre 1 si 20
             int randomDiscountPercent = getRandomDiscountPercent();
             searchedBook.setDiscountedPrice(randomDiscountPercent);
@@ -36,7 +37,7 @@ public class LibraryService {
         //stergem o carte din catalog
         String bookToDelete = "Sh*t My Dad Says";
         try {
-            Book deletedBook = removeBookFromLibraryCatalog(libraryCatalog, bookToDelete);
+            Book deletedBook = removeBookFromLibraryCatalog(bookToDelete);
             System.out.println("\nA fost epuizat stocul pentru cartea " + deletedBook.getTitle() + " !");
         } catch (InvalidKeyException invalidKeyException) {
             System.out.println("\nNu am reusit sa sterg cartea cu numele " + bookToDelete);
@@ -45,15 +46,15 @@ public class LibraryService {
         //adaugam o noua carte in catalog
         Book foundation = new Novel("Foundation", "9780553293357", "Bantam Spectra Books", "Isaac", "Asimov", 20.65, 296, NovelGenreEnum.SF);
         System.out.println("\nLibraria a primit cartea " + foundation.getTitle() + " de " + foundation.getAuthorFullName() + " in stoc.");
-        libraryCatalog.put(foundation.getTitle(), foundation);
+        addBook2Catalog(foundation);
 
         //afisam catalogul actualizat
         System.out.println("\n\nCatalogul de carti actualizat este:");
-        printLibraryCatalog(libraryCatalog);
+        printLibraryCatalog();
     }
 
     //populeaza catalog-ul
-    private static Map<String, Book> populateLibraryCatalog() {
+    public static Map<String, Book> populateLibraryCatalog() {
         Book hyperion = new Novel("Hyperion", "9780399178610", "Ace", "Dan", "Simmons", 16.27, 300, NovelGenreEnum.SF);
         Book dune = new Novel("Dune", "9780593099322", "Penguin Publishing Group", "Frank", "Herbert", 9.37, 500, NovelGenreEnum.SF);
         Book shtMyDadSays = new Novel("Sh*t My Dad Says", "9780061992704", "It Books", "Justin", "Halpern", 16, 250, NovelGenreEnum.COMEDY);
@@ -70,14 +71,14 @@ public class LibraryService {
     }
 
     //printeaza catalog-ul
-    private static void printLibraryCatalog(Map<String, Book> libraryCatalog) {
+    public static void printLibraryCatalog() {
         for (Map.Entry<String, Book> bookInfo : libraryCatalog.entrySet()) {
             System.out.println(bookInfo.getValue());
         }
     }
 
     //sterge o carte din catalog
-    private static Book removeBookFromLibraryCatalog(Map<String, Book> libraryCatalog, String bookName) throws InvalidKeyException {
+    public static Book removeBookFromLibraryCatalog(String bookName) throws InvalidKeyException {
         Book deletedBook = libraryCatalog.remove(bookName);
         if (deletedBook == null) {
             throw new InvalidKeyException();
@@ -86,7 +87,7 @@ public class LibraryService {
     }
 
     //intoarce o carte pe baza denumirii
-    private static Book getBookByNameFromCatalog(Map<String, Book> libraryCatalog, String bookName) throws InvalidKeyException {
+    public static Book getBookByNameFromCatalog(String bookName) throws InvalidKeyException {
         Book searchedBook = libraryCatalog.get(bookName.trim());
         if (searchedBook == null) {
             throw new InvalidKeyException();
@@ -94,10 +95,29 @@ public class LibraryService {
         return searchedBook;
     }
 
+    //adaugare nuvela in catalog
+    public static void addBook2Catalog(Book book) {
+        libraryCatalog.put(book.getTitle(), book);
+    }
+    //modificare pret carte din catalog
+    public static void updatePrice4Book(String bookName, int discountPercent) throws InvalidKeyException{
+        Book updatedBook = getBookByNameFromCatalog(bookName);
+
+        double priceBeforeDiscount = updatedBook.getPrice();
+        updatedBook.setDiscountedPrice(discountPercent);
+        double priceAfterDiscount = updatedBook.getPrice();
+
+        System.out.println("Pretul cartii " + updatedBook.getTitle() + " a fost modificat din " + priceBeforeDiscount + " in " + priceAfterDiscount);
+    }
+
     //generam un procent discount random ( "constantele" sunt definite in common.Constant )
     private static int getRandomDiscountPercent() {
-        Random random =  new Random();
+        Random random = new Random();
         int randomDiscountPercent = random.nextInt(MAX_DISCOUNT_PERCENT - MIN_DISCOUNT_PERCENT + 1) + MIN_DISCOUNT_PERCENT;
         return randomDiscountPercent;
+    }
+
+    public static Map<String, Book> getLibraryCatalog() {
+        return libraryCatalog;
     }
 }
